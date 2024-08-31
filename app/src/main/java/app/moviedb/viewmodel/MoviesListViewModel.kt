@@ -11,22 +11,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-sealed class MoviesListUiState {
-    data object Loading : MoviesListUiState()
-    data object Error : MoviesListUiState()
-    data class Data(val movies: Flow<PagingData<Movie>>) : MoviesListUiState()
-}
+data class MoviesListUiState(
+    val loading: Boolean = true,
+    val movies: Flow<PagingData<Movie>> = flowOf(),
+    val searchActive: Boolean = false,
+    val query: String = "",
+    val searchResults: Flow<PagingData<Movie>> = flowOf(),
+)
 
 @HiltViewModel
 class MoviesListViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<MoviesListUiState>(MoviesListUiState.Loading)
+    private val _uiState = MutableStateFlow(MoviesListUiState())
 
 //    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
 //        Log.e(TAG, "${throwable.message}", throwable)
@@ -42,11 +45,39 @@ class MoviesListViewModel @Inject constructor(
             _uiState.value
         )
 
+    fun searchMovies(query: String) {
+        _uiState.update {
+            it.copy(
+                query = query,
+                searchResults = moviesRepository.searchMovies(query),
+            )
+        }
+    }
+
     private fun loadData() {
-        _uiState.update { MoviesListUiState.Loading }
+        _uiState.update { it.copy(loading = true) }
         val moviesFlow = moviesRepository.getMovies().cachedIn(viewModelScope)
         _uiState.update {
-            MoviesListUiState.Data(moviesFlow)
+            it.copy(
+                loading = false,
+                movies = moviesFlow
+            )
+        }
+    }
+
+    fun onSearchActiveChange(active: Boolean) {
+        _uiState.update {
+            if (!active) {
+                it.copy(
+                    searchActive = false,
+                    query = "",
+                    searchResults = flowOf(),
+                )
+            } else {
+                it.copy(
+                    searchActive = true,
+                )
+            }
         }
     }
 

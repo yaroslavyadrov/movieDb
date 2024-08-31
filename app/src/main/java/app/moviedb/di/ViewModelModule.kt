@@ -1,8 +1,8 @@
 package app.moviedb.di
 
 import app.moviedb.data.MoviesRepository
-import app.moviedb.data.remote.MoviesPagingSource
-import app.moviedb.data.remote.MoviesService
+import app.moviedb.data.remote.MoviesListPagingSource
+import app.moviedb.data.remote.MoviesApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,10 +13,9 @@ import dagger.hilt.android.components.ViewModelComponent
 object ViewModelModule {
     @Provides
     fun moviesRepository(
-        moviesService: MoviesService,
-//        @DefaultDispatcher dispatcher: CoroutineContext
-        moviesPagingSource: MoviesPagingSource
+        moviesApi: MoviesApi,
+        moviesListPagingSource: MoviesListPagingSource
     ): MoviesRepository {
-        return MoviesRepository(moviesService, moviesPagingSource)
+        return MoviesRepository(moviesApi, moviesListPagingSource)
     }
 }

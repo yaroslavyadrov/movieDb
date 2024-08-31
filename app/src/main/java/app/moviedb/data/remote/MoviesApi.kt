@@ -4,10 +4,13 @@ import app.moviedb.data.remote.model.MoviesResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface MoviesService {
+interface MoviesApi {
 
-    @GET("discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc")
+    @GET("3/discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc")
     suspend fun getMovies(@Query("page") page: Int): MoviesResponse
+
+    @GET("https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US")
+    suspend fun searchMovies(@Query("query") query: String, @Query("page") page: Int): MoviesResponse
 
 //    @GET("movie/{movie_id}")
 //    suspend fun getMovieDetails(@Path("movie_id") movieId: Int): MovieDetailsResponse

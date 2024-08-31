@@ -5,14 +5,14 @@ import androidx.paging.PagingState
 import app.moviedb.data.remote.model.Movie
 import javax.inject.Inject
 
-class MoviesPagingSource @Inject constructor(
-    private val remoteService: MoviesService,
+class MoviesListPagingSource @Inject constructor(
+    private val api: MoviesApi,
 ) : PagingSource<Int, Movie>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         return try {
             val currentPage = params.key ?: 1
-            val response = remoteService.getMovies(page = currentPage)
+            val response = api.getMovies(page = currentPage)
             val movies = response.results
 
             LoadResult.Page(
