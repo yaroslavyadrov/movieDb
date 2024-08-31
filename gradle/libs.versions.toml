@@ -17,6 +17,9 @@ secrets = "2.0.1"
 lifecycleRuntimeComposeAndroid = "2.8.4"
 coil = "2.7.0"
 paging = "3.3.2"
+mockk = "1.13.4"
+kotlinCoroutinesTest = "1.8.1"
+turbine = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +47,10 @@ retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", ve
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinCoroutinesTest" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

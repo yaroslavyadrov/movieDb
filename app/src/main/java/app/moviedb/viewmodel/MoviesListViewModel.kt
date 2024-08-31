@@ -9,16 +9,13 @@ import app.moviedb.data.remote.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class MoviesListUiState(
-    val loading: Boolean = true,
     val movies: Flow<PagingData<Movie>> = flowOf(),
     val searchActive: Boolean = false,
     val query: String = "",
@@ -31,19 +28,12 @@ class MoviesListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MoviesListUiState())
 
-//    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-//        Log.e(TAG, "${throwable.message}", throwable)
-//        _uiState.update { MoviesListUiState.Error }
-//    }
-
     val uiState: StateFlow<MoviesListUiState> = _uiState
-        .onStart {
-            loadData()
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            _uiState.value
-        )
+        .asStateFlow()
+
+    init {
+        loadData()
+    }
 
     fun searchMovies(query: String) {
         _uiState.update {
@@ -54,12 +44,10 @@ class MoviesListViewModel @Inject constructor(
         }
     }
 
-    private fun loadData() {
-        _uiState.update { it.copy(loading = true) }
+    fun loadData() {
         val moviesFlow = moviesRepository.getMovies().cachedIn(viewModelScope)
         _uiState.update {
             it.copy(
-                loading = false,
                 movies = moviesFlow
             )
         }

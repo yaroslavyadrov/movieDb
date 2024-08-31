@@ -78,9 +78,89 @@ fun MoviesListContent(
 
     val listState = rememberLazyListState()
     val searchListState = rememberLazyListState()
+    val movies by rememberUpdatedState(newValue = state.movies.collectAsLazyPagingItems())
+    val searchResults by rememberUpdatedState(newValue = state.searchResults.collectAsLazyPagingItems())
+    val coroutineScope = rememberCoroutineScope()
 
-    when {
-        state.loading -> {
+    val contentPadding: Dp by animateDpAsState(
+        if (state.searchActive) 0.dp else 16.dp, label = ""
+    )
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(
+                start = contentPadding,
+                end = contentPadding
+            )
+    ) {
+        SearchBar(
+            modifier = Modifier.padding(bottom = 8.dp),
+            query = state.query,
+            onQueryChange = {
+                coroutineScope.launch {
+                    searchListState.scrollToItem(0)
+                }
+                onSearch(it)
+            },
+            onSearch = {
+
+            },
+            placeholder = {
+                Text(text = stringResource(R.string.search_movies))
+            },
+            active = state.searchActive,
+            onActiveChange = {
+                onSearchActiveChange(it)
+            }
+        ) {
+            when {
+                state.query.isEmpty() -> {
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally),
+                        text = stringResource(R.string.start_typing_to_search)
+                    )
+                }
+                searchResults.loadState.refresh is LoadState.Loading -> {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+                searchResults.itemCount == 0 -> {
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally),
+                        text = stringResource(R.string.no_results_found)
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        state = searchListState,
+                    ) {
+                        items(searchResults.itemCount) { i ->
+                            searchResults[i]?.let {
+                                MovieCard(
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        top = 8.dp,
+                                        bottom = 8.dp
+                                    ),
+                                    movie = it,
+                                    onMovieClick = onMovieClick
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (movies.loadState.refresh is LoadState.Loading) {
             Box(
                 modifier = modifier.fillMaxSize()
             ) {
@@ -88,108 +168,22 @@ fun MoviesListContent(
                     modifier = modifier.align(Alignment.Center)
                 )
             }
-        }
-
-        else -> {
-            val movies by rememberUpdatedState(newValue = state.movies.collectAsLazyPagingItems())
-            val searchResults by rememberUpdatedState(newValue = state.searchResults.collectAsLazyPagingItems())
-            val coroutineScope = rememberCoroutineScope()
-
-            val contentPadding: Dp by animateDpAsState(
-                if (state.searchActive) 0.dp else 16.dp, label = ""
-            )
-
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = contentPadding,
-                        end = contentPadding
-                    )
+        } else {
+            LazyColumn(
+                state = listState,
             ) {
-                SearchBar(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    query = state.query,
-                    onQueryChange = {
-                        coroutineScope.launch {
-                            searchListState.scrollToItem(0)
-                        }
-                        onSearch(it)
-                    },
-                    onSearch = {
-
-                    },
-                    placeholder = {
-                        Text(text = stringResource(R.string.search_movies))
-                    },
-                    active = state.searchActive,
-                    onActiveChange = {
-                        onSearchActiveChange(it)
-                    }
-                ) {
-                    when {
-                        state.query.isEmpty() -> {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                text = stringResource(R.string.start_typing_to_search)
-                            )
-                        }
-                        searchResults.loadState.refresh is LoadState.Loading -> {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.CenterHorizontally)
-                            )
-                        }
-                        searchResults.itemCount == 0 -> {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                text = stringResource(R.string.no_results_found)
-                            )
-                        }
-                        else -> {
-                            LazyColumn(
-                                state = searchListState,
-                            ) {
-                                items(searchResults.itemCount) { i ->
-                                    searchResults[i]?.let {
-                                        MovieCard(
-                                            modifier = Modifier.padding(
-                                                start = 16.dp,
-                                                end = 16.dp,
-                                                top = 8.dp,
-                                                bottom = 8.dp
-                                            ),
-                                            movie = it,
-                                            onMovieClick = onMovieClick
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                items(movies.itemCount) { i ->
+                    movies[i]?.let {
+                        MovieCard(
+                            modifier = Modifier.padding(
+                                top = 8.dp,
+                                bottom = 8.dp
+                            ),
+                            movie = it,
+                            onMovieClick = onMovieClick
+                        )
                     }
                 }
-                LazyColumn(
-                    state = listState,
-                ) {
-                    items(movies.itemCount) { i ->
-                        movies[i]?.let {
-                            MovieCard(
-                                modifier = Modifier.padding(
-                                    top = 8.dp,
-                                    bottom = 8.dp
-                                ),
-                                movie = it,
-                                onMovieClick = onMovieClick
-                            )
-                        }
-                    }
-                }
-
             }
         }
     }
