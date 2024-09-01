@@ -9,10 +9,10 @@ interface MoviesApi {
     @GET("3/discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc")
     suspend fun getMovies(@Query("page") page: Int): MoviesResponse
 
-    @GET("https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US")
+    @GET("3/search/movie?include_adult=false&language=en-US")
     suspend fun searchMovies(@Query("query") query: String, @Query("page") page: Int): MoviesResponse
 
-    //todo: If for some reason we will need to implement more details about the movie we can add this method
+//todo: If for some reason we will need to implement more details about the movie we can add this method
 //    @GET("movie/{movie_id}")
 //    suspend fun getMovieDetails(@Path("movie_id") movieId: Int): MovieDetailsResponse
 }

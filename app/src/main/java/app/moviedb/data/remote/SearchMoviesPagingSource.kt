@@ -3,9 +3,8 @@ package app.moviedb.data.remote
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.moviedb.data.remote.model.Movie
-import javax.inject.Inject
 
-class SearchMoviesPagingSource @Inject constructor(
+class SearchMoviesPagingSource(
     private val api: MoviesApi,
     private val query: String
 ) : PagingSource<Int, Movie>() {

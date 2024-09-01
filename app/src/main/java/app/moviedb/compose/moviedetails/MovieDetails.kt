@@ -287,5 +287,3 @@ private fun MovieHeaderActions(
         }
     }
 }
-
-

@@ -15,13 +15,11 @@ class MoviesRepository @Inject constructor(
     private val moviesListPagingSource: MoviesListPagingSource,
 ) {
 
-//    suspend fun getMovies() = withContext(dispatcher) { moviesService.getMovies().results }
-
     fun getMovies(): Flow<PagingData<Movie>> =
         Pager(
             PagingConfig(
-                pageSize = 20,
-                prefetchDistance = 10,
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PAGE_SIZE / 2,
                 enablePlaceholders = false
             )
         ) {
@@ -31,11 +29,15 @@ class MoviesRepository @Inject constructor(
     fun searchMovies(query: String): Flow<PagingData<Movie>> =
         Pager(
             PagingConfig(
-                pageSize = 20,
-                prefetchDistance = 10,
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PAGE_SIZE / 2,
                 enablePlaceholders = false
             )
         ) {
             SearchMoviesPagingSource(moviesApi, query)
         }.flow
+
+    companion object {
+        private const val PAGE_SIZE = 20
+    }
 }
