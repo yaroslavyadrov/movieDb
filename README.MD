@@ -2,7 +2,7 @@
 
 This is a solution for take home test.
 
-You can find compiled apk near to this file with name `app-debug.apk`.
+You can always get latest version of the app from [here](https://github.com/yaroslavyadrov/movieDb/releases/latest)
 
 ## Build instructions:
 1. Get API Read access token from [TMDB](https://www.themoviedb.org/settings/api).
