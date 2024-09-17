@@ -1,6 +1,6 @@
 ## Movie DB test app
 
-This is a solution for take home test.
+This is a solution for take home test. And also a boilerplate for some basic android app. Based on the current architectural pattern described in [Android Guidelines](https://developer.android.com/topic/architecture)
 
 You can always get latest version of the app from [here](https://github.com/yaroslavyadrov/movieDb/releases/latest)
 
